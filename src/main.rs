@@ -45,6 +45,7 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     // )]);
 
     // sprites
+    c.load_texture_from_bytes("highlight", include_bytes!("../assets/sprites/highlight.png"));
     c.load_texture_from_bytes("1", include_bytes!("../assets/sprites/1.png"));
     c.load_texture_from_bytes("2", include_bytes!("../assets/sprites/2.png"));
     c.load_texture_from_bytes("3", include_bytes!("../assets/sprites/3.png"));
@@ -70,13 +71,17 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     cam.zoom = 280.0 * 0.5;
 }
 
-fn draw_cell(cell: &Cell, pos: &(u8, u8)) {
+fn get_cell_canvas_vector(pos: &Coords) -> Vec2 {
     let x = pos.0 as f32;
     let y = pos.1 as f32;
-    let vec = Vec2::new(
+    Vec2::new(
         (x - W as f32 * 0.5 + 0.5) * SPRITE_W,
         (y - H as f32 * 0.5 + 0.5) * SPRITE_W,
-    );
+    )
+}
+
+fn draw_cell(cell: &Cell, pos: &Coords) {
+    let vec = get_cell_canvas_vector(pos);
     
     if cell.number == 0 {
         return;
@@ -118,4 +123,10 @@ fn update(state: &mut State, _c: &mut EngineContext) {
             draw_cell(cell, &pos);
         }
     }
+    
+    if let Some(pos) = state.board.selection {
+        let vec = get_cell_canvas_vector(&pos);
+        draw_sprite(texture_id("highlight"), vec, WHITE, 0, splat(SPRITE_W));
+    }
+    
 }
