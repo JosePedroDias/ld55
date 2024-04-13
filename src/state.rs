@@ -4,6 +4,10 @@ use std::fmt;
 
 pub type Coords = (u8, u8);
 
+pub fn num_to_char(number: u8) -> char {
+    char::from(number + 48)
+}
+
 #[derive(Debug)]
 pub struct Cell {
     pub number: u8,
@@ -22,7 +26,7 @@ pub struct Board {
     pub size: Coords,
     pub game_ended: bool,
     pub has_won: bool,
-    selected_pair: (Option<Coords>, Option<Coords>),
+    selection: Vec<Coords>,
     cells: HashMap<Coords, Cell>,
 }
 
@@ -32,7 +36,7 @@ impl Board {
             size,
             game_ended: false,
             has_won: false,
-            selected_pair: (None, None),
+            selection: vec!(),
             cells: HashMap::new(),
         };
 
@@ -46,6 +50,36 @@ impl Board {
         }
 
         b
+    }
+    
+    pub fn add_to_selection(self: &mut Self, pos: &Coords) -> bool {
+        if self.selection.len() == 0 {
+            self.selection.push(pos.clone());
+            return false;
+        }
+        
+        let first_pos = self.selection[0];
+        if first_pos == *pos {
+            self.selection.remove(0);
+            return false;
+        } else {
+            // is this a merge?
+            
+            let first_cells_number = self.get_cell(&first_pos).unwrap().number;
+            let second_cell_number = self.get_cell(pos).unwrap().number;
+            
+            if first_cells_number == second_cell_number {
+                println!("MATCHING {}s", first_cells_number);
+                self.get_cell_mut(&first_pos).unwrap().number = 0;
+                self.get_cell_mut(pos).unwrap().number += 1;
+                self.selection.remove(0);
+                return true;
+            } else {
+                println!("NO MATCH");
+                self.selection.remove(0);
+                return false;
+            }
+        }
     }
     
     pub fn get_cell(self: &Self, pos: &Coords) -> Option<&Cell> {
@@ -68,7 +102,7 @@ impl fmt::Display for Board {
             for x in 0..self.size.0 {
                 let pos = (x, y);
                 let cell = self.get_cell(&pos).unwrap();
-                st.push(char::from(cell.number + 48));
+                st.push(num_to_char(cell.number));
             }
             st.push('\n');
         }
@@ -85,5 +119,15 @@ mod tests {
         let b = Board::new((3, 3));
         
         assert_eq!(format!("{}", b), "111\n111\n111\n");
+    }
+    
+    #[test]
+    fn valid_match() {
+        let mut b = Board::new((3, 3));
+        
+        b.add_to_selection(&(0, 0));
+        b.add_to_selection(&(1, 0));
+        
+        assert_eq!(format!("{}", b), "021\n111\n111\n");
     }
 }

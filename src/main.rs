@@ -4,9 +4,8 @@ use comfy::*;
 use state::*;
 use std::process::exit;
 
-const W: u8 = 16;
-const H: u8 = 16;
-const NUM_MINES: u16 = 32;
+const W: u8 = 8;
+const H: u8 = 8;
 const SPRITE_W: f32 = 16.0;
 
 struct State {
@@ -46,6 +45,7 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     // )]);
 
     // sprites
+    c.load_texture_from_bytes("0", include_bytes!("../assets/sprites/0.png"));
     c.load_texture_from_bytes("1", include_bytes!("../assets/sprites/1.png"));
     c.load_texture_from_bytes("2", include_bytes!("../assets/sprites/2.png"));
     c.load_texture_from_bytes("3", include_bytes!("../assets/sprites/3.png"));
@@ -54,12 +54,6 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     c.load_texture_from_bytes("6", include_bytes!("../assets/sprites/6.png"));
     c.load_texture_from_bytes("7", include_bytes!("../assets/sprites/7.png"));
     c.load_texture_from_bytes("8", include_bytes!("../assets/sprites/8.png"));
-
-    c.load_texture_from_bytes("empty", include_bytes!("../assets/sprites/empty.png"));
-    c.load_texture_from_bytes("exploded", include_bytes!("../assets/sprites/exploded.png"));
-    c.load_texture_from_bytes("flag", include_bytes!("../assets/sprites/flag.png"));
-    c.load_texture_from_bytes("mine", include_bytes!("../assets/sprites/mine.png"));
-    c.load_texture_from_bytes("unknown", include_bytes!("../assets/sprites/unknown.png"));
 
     // sfx
     // load_sound_from_bytes(
@@ -74,7 +68,7 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     // );
 
     let mut cam = main_camera_mut();
-    cam.zoom = 280.0;
+    cam.zoom = 280.0 * 0.5;
 }
 
 fn draw_cell(cell: &Cell, pos: &(u8, u8)) {
@@ -84,7 +78,11 @@ fn draw_cell(cell: &Cell, pos: &(u8, u8)) {
         (x - W as f32 * 0.5 + 0.5) * SPRITE_W,
         (y - H as f32 * 0.5 + 0.5) * SPRITE_W,
     );
-    let t = "1";
+    
+    let t = num_to_char(cell.number);
+    let t = t.to_string();
+    let t = t.as_str();
+    
     draw_sprite(texture_id(t), vec, WHITE, 0, splat(SPRITE_W));
 }
 
@@ -94,10 +92,7 @@ fn update(state: &mut State, _c: &mut EngineContext) {
         exit(0); // TODO
     }
 
-    let is_left_down: bool = is_mouse_button_pressed(MouseButton::Left);
-    let is_right_down: bool = is_mouse_button_pressed(MouseButton::Right);
-    let is_down = is_left_down || is_right_down;
-    if is_down {
+    if is_mouse_button_pressed(MouseButton::Left) {
         let world_pos = mouse_world();
         let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + W as i32 / 2;
         let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + H as i32 / 2;
@@ -106,10 +101,9 @@ fn update(state: &mut State, _c: &mut EngineContext) {
         }
 
         let pos = (x as u8, y as u8);
-
-        if is_left_down {
-            println!("{:?}", pos);
-        }
+        println!("{:?}", pos);
+        state.board.add_to_selection(&pos);
+        println!("{}", state.board);
     }
 
     for y in 0..state.board.size.1 {
