@@ -2,6 +2,8 @@
 use std::collections::HashMap;
 use std::fmt;
 
+const COUNTDOWN: f64 = 30.0;
+
 pub type Coords = (u8, u8);
 
 pub fn num_to_char(number: u8) -> char {
@@ -29,6 +31,7 @@ pub struct Board {
     pub selection: Option<Coords>,
     pub matches: u16,
     pub mistakes: u16,
+    pub countdown: f64,
     cells: HashMap<Coords, Cell>,
 }
 
@@ -41,6 +44,7 @@ impl Board {
             selection: None,
             matches: 0,
             mistakes: 0,
+            countdown: COUNTDOWN,
             cells: HashMap::new(),
         };
 

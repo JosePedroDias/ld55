@@ -1,6 +1,7 @@
 mod state;
 
 use comfy::*;
+use comfy::egui::emath::Numeric;
 use state::*;
 use std::process::exit;
 
@@ -94,14 +95,18 @@ fn draw_cell(cell: &Cell, pos: &Coords) {
     draw_sprite(texture_id(t), vec, WHITE, 0, splat(SPRITE_W));
 }
 
-fn update(state: &mut State, _c: &mut EngineContext) {
+fn update(state: &mut State, c: &mut EngineContext) {
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
     if is_key_down(KeyCode::Escape) {
         //c.quit_flag = true;
         exit(0); // TODO
     }
-
+    
+    state.board.countdown -= c.delta.to_f64();
+    
+    clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
+    
     if is_mouse_button_pressed(MouseButton::Left) {
         let world_pos = mouse_world();
         let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + W as i32 / 2;
@@ -129,4 +134,25 @@ fn update(state: &mut State, _c: &mut EngineContext) {
         draw_sprite(texture_id("highlight"), vec, WHITE, 0, splat(SPRITE_W));
     }
     
+    // UI overlay
+    let color = Color::new(0.5, 0.0, 0.5, 0.75);
+    let t = get_time();
+    
+    let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
+    let label = label.as_str();
+    draw_text(
+        label,
+        Vec2::new(0.0, 62.0),
+        color,
+        TextAlign::Center,
+    );
+    
+    let label = format!("elapsed: {:.1}, countdown: {:.1}", t, state.board.countdown);
+    let label = label.as_str();
+    draw_text(
+        label,
+        Vec2::new(0.0, 50.0),
+        color,
+        TextAlign::Center,
+    ); 
 }
