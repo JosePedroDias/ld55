@@ -26,7 +26,9 @@ pub struct Board {
     pub size: Coords,
     pub game_ended: bool,
     pub has_won: bool,
-    selection: Option<Coords>,
+    pub selection: Option<Coords>,
+    pub matches: u16,
+    pub mistakes: u16,
     cells: HashMap<Coords, Cell>,
 }
 
@@ -37,6 +39,8 @@ impl Board {
             game_ended: false,
             has_won: false,
             selection: None,
+            matches: 0,
+            mistakes: 0,
             cells: HashMap::new(),
         };
 
@@ -60,6 +64,7 @@ impl Board {
             },
             Some(prev_pos) => {
                 if prev_pos == *pos {
+                    println!("UNSELECTED");
                     self.selection = None;
                     return false;
                 }
@@ -68,13 +73,15 @@ impl Board {
                 let second_cell_number = self.get_cell(pos).unwrap().number;
                 
                 if first_cells_number == second_cell_number {
-                    println!("MATCHING {}s", first_cells_number);
                     self.get_cell_mut(&prev_pos).unwrap().number = 0;
                     self.get_cell_mut(pos).unwrap().number += 1;
+                    self.matches += 1;
+                    println!("MATCHED {}s MATCHES: {}", first_cells_number, self.matches);
                     self.selection = None;
                     return true;
                 } else {
-                    println!("NO MATCH");
+                    self.mistakes += 1;
+                    println!("MISTAKES: {}", self.mistakes);
                     self.selection = None;
                     return false;
                 }

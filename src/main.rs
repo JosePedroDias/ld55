@@ -45,7 +45,6 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     // )]);
 
     // sprites
-    c.load_texture_from_bytes("0", include_bytes!("../assets/sprites/0.png"));
     c.load_texture_from_bytes("1", include_bytes!("../assets/sprites/1.png"));
     c.load_texture_from_bytes("2", include_bytes!("../assets/sprites/2.png"));
     c.load_texture_from_bytes("3", include_bytes!("../assets/sprites/3.png"));
@@ -79,6 +78,10 @@ fn draw_cell(cell: &Cell, pos: &(u8, u8)) {
         (y - H as f32 * 0.5 + 0.5) * SPRITE_W,
     );
     
+    if cell.number == 0 {
+        return;
+    }
+    
     let t = num_to_char(cell.number);
     let t = t.to_string();
     let t = t.as_str();
@@ -87,6 +90,8 @@ fn draw_cell(cell: &Cell, pos: &(u8, u8)) {
 }
 
 fn update(state: &mut State, _c: &mut EngineContext) {
+    clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
+    
     if is_key_down(KeyCode::Escape) {
         //c.quit_flag = true;
         exit(0); // TODO
@@ -101,9 +106,9 @@ fn update(state: &mut State, _c: &mut EngineContext) {
         }
 
         let pos = (x as u8, y as u8);
-        println!("{:?}", pos);
+        //println!("{:?}", pos);
         state.board.add_to_selection(&pos);
-        println!("{}", state.board);
+        //println!("{}", state.board);
     }
 
     for y in 0..state.board.size.1 {
