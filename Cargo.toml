@@ -1,0 +1,18 @@
+[package]
+name = "ld55"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+comfy = "0.3.1"
+
+[dependencies.web-sys]
+version = "0.3.64"
+features = [
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+]
