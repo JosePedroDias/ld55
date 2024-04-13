@@ -26,7 +26,7 @@ pub struct Board {
     pub size: Coords,
     pub game_ended: bool,
     pub has_won: bool,
-    selection: Vec<Coords>,
+    selection: Option<Coords>,
     cells: HashMap<Coords, Cell>,
 }
 
@@ -36,7 +36,7 @@ impl Board {
             size,
             game_ended: false,
             has_won: false,
-            selection: vec!(),
+            selection: None,
             cells: HashMap::new(),
         };
 
@@ -53,31 +53,31 @@ impl Board {
     }
     
     pub fn add_to_selection(self: &mut Self, pos: &Coords) -> bool {
-        if self.selection.len() == 0 {
-            self.selection.push(pos.clone());
-            return false;
-        }
-        
-        let first_pos = self.selection[0];
-        if first_pos == *pos {
-            self.selection.remove(0);
-            return false;
-        } else {
-            // is this a merge?
-            
-            let first_cells_number = self.get_cell(&first_pos).unwrap().number;
-            let second_cell_number = self.get_cell(pos).unwrap().number;
-            
-            if first_cells_number == second_cell_number {
-                println!("MATCHING {}s", first_cells_number);
-                self.get_cell_mut(&first_pos).unwrap().number = 0;
-                self.get_cell_mut(pos).unwrap().number += 1;
-                self.selection.remove(0);
-                return true;
-            } else {
-                println!("NO MATCH");
-                self.selection.remove(0);
+        match self.selection {
+            None => {
+                self.selection = Some(pos.clone());
                 return false;
+            },
+            Some(prev_pos) => {
+                if prev_pos == *pos {
+                    self.selection = None;
+                    return false;
+                }
+                
+                let first_cells_number = self.get_cell(&prev_pos).unwrap().number;
+                let second_cell_number = self.get_cell(pos).unwrap().number;
+                
+                if first_cells_number == second_cell_number {
+                    println!("MATCHING {}s", first_cells_number);
+                    self.get_cell_mut(&prev_pos).unwrap().number = 0;
+                    self.get_cell_mut(pos).unwrap().number += 1;
+                    self.selection = None;
+                    return true;
+                } else {
+                    println!("NO MATCH");
+                    self.selection = None;
+                    return false;
+                }
             }
         }
     }
