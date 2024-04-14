@@ -20,5 +20,5 @@
 - penalties:
     - [x] timer running down to 0. when it reach 0, some of the board tiles get added back
     - [x] there may also be a meter adding mistakes (penalty countdown decreases by 10s)
-- scoring:
-    - [ ] time spent to finish the game - number of matches done
+- score:
+    - [ ] time spent to finish the game shoud be enough? (we also have number of mistakes and matches)

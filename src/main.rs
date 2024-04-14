@@ -10,6 +10,8 @@ const H: u8 = 6;
 const SPRITE_W: f32 = 16.0;
 const DROP_SHADOW_OFFSET: f32 = 1.0;
 
+const UI_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.33);
+
 struct State {
     pub board: Board,
     pub time_spent: f32,
@@ -159,7 +161,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
     }
     
     // UI overlay
-    let color = Color::new(0.5, 0.0, 0.5, 0.75);
+    
     
     if state.board.game_ended {
         let label = format!("Finished in {:.2} secs!", state.time_spent);
@@ -167,7 +169,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
         draw_text(
             label,
             Vec2::new(0.0, 0.0),
-            color,
+            UI_COLOR,
             TextAlign::Center,
         );
     } else {
@@ -189,9 +191,20 @@ fn update(state: &mut State, c: &mut EngineContext) {
         draw_text(
             label,
             Vec2::new(0.0, 62.0),
-            color,
+            UI_COLOR,
             TextAlign::Center,
-        ); 
+        );
     }
+    
+    // draw penalty border
+    let p = state.board.penalty_countdown / PENALTY_COUNTDOWN;
+    
+    draw_rect(
+        Vec2::new(0.0, -62.0),
+        Vec2::new(120.0 * p as f32, 6.0),
+        Color::new(1.0, p as f32, 0.0, 1.0),
+        0
+    );
+    
     
 }

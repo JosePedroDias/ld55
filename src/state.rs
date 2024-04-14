@@ -3,7 +3,7 @@ use rand::prelude::*;
 use std::collections::HashMap;
 use std::fmt;
 
-const PENALTY_COUNTDOWN: f64 = 75.0;
+pub const PENALTY_COUNTDOWN: f64 = 75.0;
 const FILL_COUNTDOWN: f64 = 2.0;
 const GOAL_NUMBER: u8 = 7;
 
