@@ -8,6 +8,7 @@ use std::process::exit;
 const W: u8 = 6;
 const H: u8 = 6;
 const SPRITE_W: f32 = 16.0;
+const DROP_SHADOW_OFFSET: f32 = 1.0;
 
 struct State {
     pub board: Board,
@@ -27,7 +28,7 @@ simple_game!("merge or die", State, config, setup, update);
 
 fn config(config: GameConfig) -> GameConfig {
     GameConfig {
-        resolution: ResolutionConfig::Physical(700, 700),
+        resolution: ResolutionConfig::Physical(1000, 1000),
         min_resolution: ResolutionConfig::Physical(128, 128),
         bloom_enabled: false,
         lighting_enabled: false,
@@ -92,6 +93,8 @@ fn draw_cell(cell: &Cell, pos: &Coords) {
     let t = t.to_string();
     let t = t.as_str();
     
+    let vec2 = Vec2::new(vec.x + DROP_SHADOW_OFFSET, vec.y - DROP_SHADOW_OFFSET);
+    draw_sprite(texture_id(t), vec2, BLACK, 0, splat(SPRITE_W));
     draw_sprite(texture_id(t), vec, WHITE, 0, splat(SPRITE_W));
 }
 
