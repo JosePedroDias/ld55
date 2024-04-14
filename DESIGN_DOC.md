@@ -1,9 +1,33 @@
 # merge or die, a ludum dare 55 entry
 
+## prioritized todo list
+
+- [ ] multiple levels (10 min)
+    - level 1: dims: 6x6, penalty: 75s, goal: 7
+    - level 2: dims: 7x7, penalty: 60s, goal: 7
+    - level 3: dims: 8x8, penalty: 45s, goal: 8
+- [ ] introduce screen waiting for click to start the level (5 min)
+    merge until you get a GOAL
+    be careful with The Bar
+    click to start
+- [ ] short instructions outside the canvas? (5 min)
+- [ ] keep the high scores on local storage? (10 min)
+    - RESTART button (location.reload())
+- [ ] reviews score system now that we have multiple levels? (10 min)
+- [ ] visuals (30 min)
+    - re-export sprites with better resolution (20 min)
+    - background monster making appearance?
+    - replace default font maybe?
+- [ ] audio (30-60 min)
+    - sfx first selected sprite?
+    - start level tune
+    - end of level tune
+- [ ] review text, add cover image (30 min)
+
 ## basic mechanics
 
 - [x] 2D matrix of M * N sprites
-- [x] there's a progression of sprites, let's say they're powers of 2, 2 > 4 > ... > 2048
+- [x] there's a progression of sprites, let's say they're powers of 2, 1 > 2 > 4 > ... > 2048
 - [ ] the theme is a bit dark
 - [x] we need audio sfx for
     - applying penalty
