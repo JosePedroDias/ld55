@@ -1,4 +1,10 @@
-# ld55
+# ld55 - merge or die
+
+This is a ludum dare combo entry on the theme "Summoning".
+
+- [Hackathon entry page](https://ldjam.com/events/ludum-dare/55/merge-or-die)
+- [Play the game on Github](https://josepedrodias.github.io/ld55/dist/)
+
 
 ## reference
 - https://docs.rs/comfy/latest/comfy/
