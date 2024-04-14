@@ -6,15 +6,30 @@
         <title>ld55 - merge or die</title>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         <style>
+            html, body {
+                overflow: none;
+                margin: 0;
+            }
+            body {
+                text-align: center;
+            }
+            #wasm-body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 60px;
+            }
             canvas {
-                background-color: black;
+                display: block;
+            }
+            button {
+                padding: 10px 20px;
             }
         </style>
     </head>
     
-    <body id="wasm-body">
-        <script>
-            document.body.addEventListener('contextmenu', (ev) => ev.preventDefault());
-        </script>
+    <body>
+        <div id="wasm-body"></div>
+        <button onclick="location.reload()"> restart </button>
     </body>
 </html>

@@ -1,7 +1,6 @@
 mod state;
 
 use comfy::*;
-use comfy::egui::emath::Numeric;
 use state::*;
 use std::process::exit;
 
@@ -106,6 +105,9 @@ fn draw_cell(cell: &Cell, pos: &Coords, size: &Coords) {
 }
 
 fn update(state: &mut State, c: &mut EngineContext) {
+    //let delta = c.delta as f64;
+    let delta = 1.0f64 / 60.0; // ugly fix because browser is not returning 1/60 or even 1/120 but a much lower number?!
+    
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
     if is_key_down(KeyCode::Escape) {
@@ -113,7 +115,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
     }
     
     if !state.game_paused {
-        state.handle_countdowns(c.delta.to_f64());
+        state.handle_countdowns(delta);
         
         if state.has_won() {
             state.game_paused = true;

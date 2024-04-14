@@ -11,9 +11,10 @@
     merge until you get a GOAL
     be careful with The Bar
     click to start
-- [ ] short instructions outside the canvas? (5 min)
-- [ ] keep the high scores on local storage? (10 min)
-    - RESTART button (location.reload())
+- [x] short instructions outside the canvas? (5 min)
+- [ ] an unfocused tab/window should pause the game (30 min)
+- [ ] keep the high scores on local storage? (20 min)
+- [x] RESTART button (location.reload())
 - [ ] visuals (30 min)
     - re-export sprites with better resolution (20 min)
     - generate cover image
