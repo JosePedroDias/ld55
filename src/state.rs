@@ -39,12 +39,14 @@ impl Cell {
 }
 
 #[derive(Debug)]
-pub struct Board {
+pub struct State {
+    pub game_started: bool,
     pub game_ended: bool,
     pub selection: Option<Coords>,
     pub current_level: u8,
     pub matches: u16,
     pub mistakes: u16,
+    pub elapsed_time: f64,
     pub penalty_countdown: f64,
     pub fill_countdown: f64,
     pub level_params: LevelParams,
@@ -52,15 +54,17 @@ pub struct Board {
     rng: ThreadRng,
 }
 
-impl Board {
-    pub fn new() -> Self {
+impl State {
+    pub fn new_() -> Self {
         let level_params = setup_new_level(1);
-        let mut b = Board {
+        let mut b = State {
+            game_started: false,
             game_ended: false,
             selection: None,
             current_level: 1,
             matches: 0,
             mistakes: 0,
+            elapsed_time: 0.0,
             penalty_countdown: level_params.penalty_countdown,
             fill_countdown: level_params.fill_countdown,
             level_params,
@@ -130,8 +134,13 @@ impl Board {
     }
     
     pub fn handle_countdowns(self: &mut Self, delta: f64) {
+        if !self.game_started {
+            return;
+        }
+        
         let p_sec_ = self.penalty_countdown.round();
         
+        self.elapsed_time += delta;
         self.penalty_countdown -= delta;
         self.fill_countdown -= delta;
         
@@ -207,7 +216,7 @@ impl Board {
     
 }
 
-impl fmt::Display for Board {
+impl fmt::Display for State {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut st = String::new();
         for y in 0..self.level_params.size.1 {

@@ -2,11 +2,11 @@
 
 ## prioritized todo list
 
-- [ ] multiple levels (10 min)
+- [.] multiple levels (10 min)
     - level 1: dims: 6x6, penalty: 75s, goal: 7
     - level 2: dims: 7x7, penalty: 60s, goal: 7
     - level 3: dims: 8x8, penalty: 45s, goal: 8
-- [ ] introduce screen waiting for click to start the level (5 min)
+- [x] introduce screen waiting for click to start the level (5 min)
     merge until you get a GOAL
     be careful with The Bar
     click to start

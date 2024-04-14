@@ -10,17 +10,9 @@ const DROP_SHADOW_OFFSET: f32 = 1.0;
 
 const UI_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.33);
 
-struct State {
-    pub board: Board,
-    pub time_spent: f32,
-}
-
 impl State {
     pub fn new(_c: &EngineState) -> Self {
-        Self {
-            board: Board::new(),
-            time_spent: 0.0,
-        }
+        Self::new_()
     }
 }
 
@@ -120,20 +112,24 @@ fn update(state: &mut State, c: &mut EngineContext) {
         exit(0); // TODO
     }
     
-    if !state.board.game_ended {
-        state.board.handle_countdowns(c.delta.to_f64());
+    if !state.game_ended {
+        state.handle_countdowns(c.delta.to_f64());
         
-        if state.board.has_won() {
-            state.board.game_ended = true;
+        if state.has_won() {
+            state.game_ended = true;
             // TODO: elapsed time to be captured in board
         }
     }
     
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
-    let size = state.board.level_params.size.clone();
+    let size = state.level_params.size.clone();
     
-    if !state.board.game_ended && is_mouse_button_pressed(MouseButton::Left) {
+    if !state.game_ended && is_mouse_button_pressed(MouseButton::Left) {
+        if !state.game_started {
+            state.game_started = true;
+        }
+        
         let world_pos = mouse_world();
         let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + size.0 as i32 / 2;
         let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + size.1 as i32 / 2;
@@ -142,29 +138,37 @@ fn update(state: &mut State, c: &mut EngineContext) {
         }
 
         let pos = (x as u8, y as u8);
-        //println!("{:?}", pos);
-        state.board.add_to_selection(&pos);
-        //println!("{}", state.board);
+        state.add_to_selection(&pos);
     }
 
     for y in 0..size.1 {
         for x in 0..size.0 {
             let pos = (x, y);
-            let cell = state.board.get_cell(&pos).unwrap();
+            let cell = state.get_cell(&pos).unwrap();
             draw_cell(cell, &pos, &size);
         }
     }
     
-    if let Some(pos) = state.board.selection {
+    if let Some(pos) = state.selection {
         let vec = get_cell_canvas_vector(&pos, &size);
         draw_sprite(texture_id("highlight"), vec, WHITE, 0, splat(SPRITE_W));
     }
     
     // UI overlay
     
-    
-    if state.board.game_ended {
-        let label = format!("Finished in {:.2} secs!", state.time_spent);
+    if !state.game_started {
+        let label = format!("merge until you get a {}
+be careful with The Bar
+click to start!", state.level_params.goal_number);
+        let label = label.as_str();
+        draw_text(
+            label,
+            Vec2::new(0.0, 0.0),
+            UI_COLOR,
+            TextAlign::Center,
+        );
+    } else if state.game_ended {
+        let label = format!("Finished in {:.2} secs!", state.elapsed_time);
         let label = label.as_str();
         draw_text(
             label,
@@ -173,10 +177,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
             TextAlign::Center,
         );
     } else {
-        let t = get_time();
-        state.time_spent = t as f32;
-    
-        let label = format!("elapsed: {:.0}", t);
+        let label = format!("elapsed: {:.0}", state.elapsed_time);
         let label = label.as_str();
         draw_text(
             label,
@@ -187,7 +188,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
     }
     
     // draw penalty border
-    let p = state.board.penalty_countdown / state.board.level_params.penalty_countdown;
+    let p = state.penalty_countdown / state.level_params.penalty_countdown;
     
     draw_rect(
         Vec2::new(0.0, -62.0),
