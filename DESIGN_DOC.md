@@ -3,9 +3,10 @@
 ## prioritized todo list
 
 - [x] multiple levels (10 min)
-    - level 1: dims: 5x5, penalty: 75s, goal: 6
-    - level 2: dims: 7x7, penalty: 60s, goal: 7
-    - level 3: dims: 8x8, penalty: 45s, goal: 8
+    - level 1: dims: 5x5, penalty: 75s, goal: 5
+    - level 2: dims: 7x7, penalty: 60s, goal: 6
+    - level 3: dims: 8x8, penalty: 45s, goal: 7
+    - level 4: dims: 9x9, penalty: 30s, goal: 8
 - [x] introduce screen waiting for click to start the level (5 min)
     merge until you get a GOAL
     be careful with The Bar
@@ -15,6 +16,7 @@
     - RESTART button (location.reload())
 - [ ] visuals (30 min)
     - re-export sprites with better resolution (20 min)
+    - generate cover image
     - background monster making appearance?
     - replace default font maybe?
 - [ ] audio (30-60 min)

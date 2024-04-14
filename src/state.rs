@@ -13,14 +13,15 @@ pub struct LevelParams {
     pub goal_number: u8,
 }
 
-pub const NUM_LEVELS: u8 = 3;
+pub const NUM_LEVELS: u8 = 4;
 
 fn setup_new_level(level: u8) -> LevelParams {
     match level {
         //1 => LevelParams { size: (4, 4), penalty_countdown: 75.0, fill_countdown: 2.0, goal_number: 3 },
         1 => LevelParams { size: (5, 5), penalty_countdown: 75.0, fill_countdown: 2.0, goal_number: 5 },
         2 => LevelParams { size: (7, 7), penalty_countdown: 60.0, fill_countdown: 2.0, goal_number: 6 },
-        _ => LevelParams { size: (8, 8), penalty_countdown: 45.0, fill_countdown: 2.0, goal_number: 7 },
+        3 => LevelParams { size: (8, 8), penalty_countdown: 45.0, fill_countdown: 2.0, goal_number: 7 },
+        _ => LevelParams { size: (9, 9), penalty_countdown: 30.0, fill_countdown: 1.5, goal_number: 8 },
     }
 }
 
