@@ -5,8 +5,6 @@ use comfy::egui::emath::Numeric;
 use state::*;
 use std::process::exit;
 
-const W: u8 = 6;
-const H: u8 = 6;
 const SPRITE_W: f32 = 16.0;
 const DROP_SHADOW_OFFSET: f32 = 1.0;
 
@@ -20,7 +18,7 @@ struct State {
 impl State {
     pub fn new(_c: &EngineState) -> Self {
         Self {
-            board: Board::new((W, H)),
+            board: Board::new(),
             time_spent: 0.0,
         }
     }
@@ -90,17 +88,17 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     cam.zoom = 280.0 * 0.5;
 }
 
-fn get_cell_canvas_vector(pos: &Coords) -> Vec2 {
+fn get_cell_canvas_vector(pos: &Coords, size: &Coords) -> Vec2 {
     let x = pos.0 as f32;
     let y = pos.1 as f32;
     Vec2::new(
-        (x - W as f32 * 0.5 + 0.5) * SPRITE_W,
-        (y - H as f32 * 0.5 + 0.5) * SPRITE_W,
+        (x - size.0 as f32 * 0.5 + 0.5) * SPRITE_W,
+        (y - size.1 as f32 * 0.5 + 0.5) * SPRITE_W,
     )
 }
 
-fn draw_cell(cell: &Cell, pos: &Coords) {
-    let vec = get_cell_canvas_vector(pos);
+fn draw_cell(cell: &Cell, pos: &Coords, size: &Coords) {
+    let vec = get_cell_canvas_vector(pos, size);
     
     if cell.number == 0 {
         return;
@@ -133,11 +131,13 @@ fn update(state: &mut State, c: &mut EngineContext) {
     
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
+    let size = state.board.level_params.size.clone();
+    
     if !state.board.game_ended && is_mouse_button_pressed(MouseButton::Left) {
         let world_pos = mouse_world();
-        let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + W as i32 / 2;
-        let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + H as i32 / 2;
-        if x < 0 || x >= state.board.size.0 as i32 || y < 0 || y >= state.board.size.1 as i32 {
+        let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + size.0 as i32 / 2;
+        let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + size.1 as i32 / 2;
+        if x < 0 || x >= size.0 as i32 || y < 0 || y >= size.1 as i32 {
             return;
         }
 
@@ -147,16 +147,16 @@ fn update(state: &mut State, c: &mut EngineContext) {
         //println!("{}", state.board);
     }
 
-    for y in 0..state.board.size.1 {
-        for x in 0..state.board.size.0 {
+    for y in 0..size.1 {
+        for x in 0..size.0 {
             let pos = (x, y);
             let cell = state.board.get_cell(&pos).unwrap();
-            draw_cell(cell, &pos);
+            draw_cell(cell, &pos, &size);
         }
     }
     
     if let Some(pos) = state.board.selection {
-        let vec = get_cell_canvas_vector(&pos);
+        let vec = get_cell_canvas_vector(&pos, &size);
         draw_sprite(texture_id("highlight"), vec, WHITE, 0, splat(SPRITE_W));
     }
     
@@ -176,16 +176,6 @@ fn update(state: &mut State, c: &mut EngineContext) {
         let t = get_time();
         state.time_spent = t as f32;
     
-        // let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
-        // let label = label.as_str();
-        // draw_text(
-        //     label,
-        //     Vec2::new(0.0, 62.0),
-        //     color,
-        //     TextAlign::Center,
-        // );
-        
-        //let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
         let label = format!("elapsed: {:.0}", t);
         let label = label.as_str();
         draw_text(
@@ -197,7 +187,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
     }
     
     // draw penalty border
-    let p = state.board.penalty_countdown / PENALTY_COUNTDOWN;
+    let p = state.board.penalty_countdown / state.board.level_params.penalty_countdown;
     
     draw_rect(
         Vec2::new(0.0, -62.0),
