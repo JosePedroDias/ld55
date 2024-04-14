@@ -162,7 +162,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
     let color = Color::new(0.5, 0.0, 0.5, 0.75);
     
     if state.board.game_ended {
-        let label = format!("FINISHED IN {:.2} s:", state.time_spent);
+        let label = format!("Finished in {:.2} secs!", state.time_spent);
         let label = label.as_str();
         draw_text(
             label,
@@ -174,20 +174,21 @@ fn update(state: &mut State, c: &mut EngineContext) {
         let t = get_time();
         state.time_spent = t as f32;
     
-        let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
+        // let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
+        // let label = label.as_str();
+        // draw_text(
+        //     label,
+        //     Vec2::new(0.0, 62.0),
+        //     color,
+        //     TextAlign::Center,
+        // );
+        
+        //let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
+        let label = format!("elapsed: {:.0}", t);
         let label = label.as_str();
         draw_text(
             label,
             Vec2::new(0.0, 62.0),
-            color,
-            TextAlign::Center,
-        );
-        
-        let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
-        let label = label.as_str();
-        draw_text(
-            label,
-            Vec2::new(0.0, 50.0),
             color,
             TextAlign::Center,
         ); 
