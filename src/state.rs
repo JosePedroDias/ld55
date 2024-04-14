@@ -13,9 +13,12 @@ pub struct LevelParams {
     pub goal_number: u8,
 }
 
-pub fn setup_new_level(level: u8) -> LevelParams {
+pub const NUM_LEVELS: u8 = 3;
+
+fn setup_new_level(level: u8) -> LevelParams {
     match level {
-        1 => LevelParams { size: (6, 6), penalty_countdown: 75.0, fill_countdown: 2.0, goal_number: 6 },
+        //1 => LevelParams { size: (4, 4), penalty_countdown: 75.0, fill_countdown: 2.0, goal_number: 3 },
+        1 => LevelParams { size: (5, 5), penalty_countdown: 75.0, fill_countdown: 2.0, goal_number: 5 },
         2 => LevelParams { size: (7, 7), penalty_countdown: 60.0, fill_countdown: 2.0, goal_number: 6 },
         _ => LevelParams { size: (8, 8), penalty_countdown: 45.0, fill_countdown: 2.0, goal_number: 7 },
     }
@@ -40,8 +43,7 @@ impl Cell {
 
 #[derive(Debug)]
 pub struct State {
-    pub game_started: bool,
-    pub game_ended: bool,
+    pub game_paused: bool,
     pub selection: Option<Coords>,
     pub current_level: u8,
     pub matches: u16,
@@ -57,27 +59,24 @@ pub struct State {
 impl State {
     pub fn new_() -> Self {
         let level_params = setup_new_level(1);
-        let mut b = State {
-            game_started: false,
-            game_ended: false,
+        State {
+            game_paused: true,
             selection: None,
-            current_level: 1,
+            current_level: 0,
             matches: 0,
             mistakes: 0,
             elapsed_time: 0.0,
-            penalty_countdown: level_params.penalty_countdown,
-            fill_countdown: level_params.fill_countdown,
+            penalty_countdown: 0.0,
+            fill_countdown: 0.0,
             level_params,
             cells: HashMap::new(),
             rng: rand::thread_rng(),
-        };
-
-        b.populate_board();
-
-        b
+        }
     }
     
-    pub fn populate_board(self: &mut Self) {
+    fn populate_board(self: &mut Self) {
+        self.penalty_countdown = self.level_params.penalty_countdown;
+        self.fill_countdown = self.level_params.fill_countdown;
         self.cells.clear();
         for y in 0..self.level_params.size.1 {
             for x in 0..self.level_params.size.0 {
@@ -87,6 +86,20 @@ impl State {
                 self.cells.insert(pos, cell);
             }
         }
+    }
+    
+    pub fn at_last_level(self: &Self) -> bool {
+        self.current_level == NUM_LEVELS
+    } 
+    
+    pub fn increase_level(self: &mut Self) -> bool {
+        if self.at_last_level() {
+            return false;
+        }
+        self.current_level += 1;
+        self.level_params = setup_new_level(self.current_level);
+        self.populate_board();
+        true
     }
     
     pub fn add_to_selection(self: &mut Self, pos: &Coords) -> bool {
@@ -134,7 +147,7 @@ impl State {
     }
     
     pub fn handle_countdowns(self: &mut Self, delta: f64) {
-        if !self.game_started {
+        if self.game_paused {
             return;
         }
         

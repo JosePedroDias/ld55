@@ -2,8 +2,8 @@
 
 ## prioritized todo list
 
-- [.] multiple levels (10 min)
-    - level 1: dims: 6x6, penalty: 75s, goal: 7
+- [x] multiple levels (10 min)
+    - level 1: dims: 5x5, penalty: 75s, goal: 6
     - level 2: dims: 7x7, penalty: 60s, goal: 7
     - level 3: dims: 8x8, penalty: 45s, goal: 8
 - [x] introduce screen waiting for click to start the level (5 min)
@@ -13,7 +13,6 @@
 - [ ] short instructions outside the canvas? (5 min)
 - [ ] keep the high scores on local storage? (10 min)
     - RESTART button (location.reload())
-- [ ] reviews score system now that we have multiple levels? (10 min)
 - [ ] visuals (30 min)
     - re-export sprites with better resolution (20 min)
     - background monster making appearance?

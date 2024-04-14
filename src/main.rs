@@ -112,40 +112,47 @@ fn update(state: &mut State, c: &mut EngineContext) {
         exit(0); // TODO
     }
     
-    if !state.game_ended {
+    if !state.game_paused {
         state.handle_countdowns(c.delta.to_f64());
         
         if state.has_won() {
-            state.game_ended = true;
-            // TODO: elapsed time to be captured in board
+            state.game_paused = true;
         }
     }
     
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
-    let size = state.level_params.size.clone();
+    let mut size = state.level_params.size.clone();
     
-    if !state.game_ended && is_mouse_button_pressed(MouseButton::Left) {
-        if !state.game_started {
-            state.game_started = true;
+    if is_mouse_button_pressed(MouseButton::Left) {
+        if state.game_paused && !state.at_last_level() {
+            state.increase_level();
+            state.game_paused = false;
+            size = state.level_params.size.clone();
+        } else {
+            let world_pos = mouse_world();
+            let x: i32 = ((world_pos.x + size.0 as f32 * 0.5 * SPRITE_W) / SPRITE_W).floor() as i32;
+            let y: i32 = ((world_pos.y + size.1 as f32 * 0.5 * SPRITE_W) / SPRITE_W).floor() as i32;
+            if x < 0 || x >= size.0 as i32 || y < 0 || y >= size.1 as i32 {
+                return;
+            }
+    
+            let pos = (x as u8, y as u8);
+            //println!("{:?}", pos);
+            state.add_to_selection(&pos);
         }
-        
-        let world_pos = mouse_world();
-        let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + size.0 as i32 / 2;
-        let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + size.1 as i32 / 2;
-        if x < 0 || x >= size.0 as i32 || y < 0 || y >= size.1 as i32 {
-            return;
-        }
-
-        let pos = (x as u8, y as u8);
-        state.add_to_selection(&pos);
     }
 
     for y in 0..size.1 {
         for x in 0..size.0 {
             let pos = (x, y);
-            let cell = state.get_cell(&pos).unwrap();
-            draw_cell(cell, &pos, &size);
+            let maybe_cell = state.get_cell(&pos);
+            match maybe_cell {
+                Some(cell) => {
+                    draw_cell(cell, &pos, &size);
+                },
+                _ => ()
+            }
         }
     }
     
@@ -156,26 +163,29 @@ fn update(state: &mut State, c: &mut EngineContext) {
     
     // UI overlay
     
-    if !state.game_started {
-        let label = format!("merge until you get a {}
-be careful with The Bar
-click to start!", state.level_params.goal_number);
-        let label = label.as_str();
-        draw_text(
-            label,
-            Vec2::new(0.0, 0.0),
-            UI_COLOR,
-            TextAlign::Center,
-        );
-    } else if state.game_ended {
-        let label = format!("Finished in {:.2} secs!", state.elapsed_time);
-        let label = label.as_str();
-        draw_text(
-            label,
-            Vec2::new(0.0, 0.0),
-            UI_COLOR,
-            TextAlign::Center,
-        );
+    if state.game_paused {
+        if state.current_level == NUM_LEVELS {
+            let label = format!("Congratulations!
+You've beat the game in {:.2} secs.", state.elapsed_time);
+            let label = label.as_str();
+            draw_text(
+                label,
+                Vec2::new(0.0, 0.0),
+                UI_COLOR,
+                TextAlign::Center,
+            );
+        } else {
+            let label = format!("Merge until you get a {}
+Be careful with The Bar!
+Click to start", state.level_params.goal_number);
+            let label = label.as_str();
+            draw_text(
+                label,
+                Vec2::new(0.0, 0.0),
+                UI_COLOR,
+                TextAlign::Center,
+            );
+        }
     } else {
         let label = format!("elapsed: {:.0}", state.elapsed_time);
         let label = label.as_str();
