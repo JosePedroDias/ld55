@@ -5,7 +5,7 @@ use std::fmt;
 
 const PENALTY_COUNTDOWN: f64 = 75.0;
 const FILL_COUNTDOWN: f64 = 2.0;
-const GOAL_NUMBER: u16 = 7;
+const GOAL_NUMBER: u8 = 7;
 
 pub type Coords = (u8, u8);
 
@@ -73,7 +73,7 @@ impl Board {
             },
             Some(prev_pos) => {
                 if prev_pos == *pos {
-                    println!("UNSELECTED");
+                    //println!("UNSELECTED");
                     self.selection = None;
                     return false;
                 }
@@ -90,7 +90,8 @@ impl Board {
                     return true;
                 } else {
                     self.mistakes += 1;
-                    println!("MISTAKES: {}", self.mistakes);
+                    self.penalty_countdown -= 10.0;
+                    //println!("MISTAKES: {}", self.mistakes);
                     self.selection = None;
                     return false;
                 }
