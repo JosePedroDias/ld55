@@ -104,7 +104,7 @@ fn draw_cell(cell: &Cell, pos: &Coords, size: &Coords) {
     draw_sprite(texture_id(t), vec, WHITE, 0, splat(SPRITE_W));
 }
 
-fn update(state: &mut State, c: &mut EngineContext) {
+fn update(state: &mut State, _c: &mut EngineContext) {
     //let delta = c.delta as f64;
     let delta = 1.0f64 / 60.0; // ugly fix because browser is not returning 1/60 or even 1/120 but a much lower number?!
     
@@ -185,7 +185,7 @@ You've beat the game in {:.2} secs.", state.elapsed_time);
             );
         }
     } else {
-        let label = format!("level {}, goal: {}, elapsed: {:.0} s", state.current_level, state.level_params.goal_number, state.elapsed_time);
+        let label = format!("level:{}  goal:{}  {:.0} s", state.current_level, state.level_params.goal_number, state.elapsed_time);
         let label = label.as_str();
         draw_text(
             label,

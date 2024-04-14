@@ -12,19 +12,19 @@
     be careful with The Bar
     click to start
 - [x] short instructions outside the canvas? (5 min)
-- [ ] an unfocused tab/window should pause the game (30 min)
 - [ ] keep the high scores on local storage? (20 min)
 - [x] RESTART button (location.reload())
 - [ ] visuals (30 min)
     - re-export sprites with better resolution (20 min)
     - generate cover image
-    - background monster making appearance?
-    - replace default font maybe?
+    - ~background monster making appearance?~
+    - ~replace default font maybe?~
+- [ ] review text, add cover image (30 min)
 - [ ] audio (30-60 min)
     - sfx first selected sprite?
-    - start level tune
-    - end of level tune
-- [ ] review text, add cover image (30 min)
+    - ~start level tune~
+    - ~end of level tune~
+- [ ] ~an unfocused tab/window should pause the game (30 min)~
 
 ## basic mechanics
 
