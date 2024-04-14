@@ -5,8 +5,8 @@ use comfy::egui::emath::Numeric;
 use state::*;
 use std::process::exit;
 
-const W: u8 = 8;
-const H: u8 = 8;
+const W: u8 = 6;
+const H: u8 = 6;
 const SPRITE_W: f32 = 16.0;
 
 struct State {
@@ -99,15 +99,21 @@ fn update(state: &mut State, c: &mut EngineContext) {
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
     if is_key_down(KeyCode::Escape) {
-        //c.quit_flag = true;
         exit(0); // TODO
     }
     
-    state.board.countdown -= c.delta.to_f64();
+    if !state.board.game_ended {
+        state.board.handle_countdowns(c.delta.to_f64());
+        
+        if state.board.has_won() {
+            state.board.game_ended = true;
+            // TODO: elapsed time to be captured in board
+        }
+    }
     
     clear_background(Color::new(0.25, 0.25, 0.25, 1.0));
     
-    if is_mouse_button_pressed(MouseButton::Left) {
+    if !state.board.game_ended && is_mouse_button_pressed(MouseButton::Left) {
         let world_pos = mouse_world();
         let x: i32 = (world_pos.x / SPRITE_W).floor() as i32 + W as i32 / 2;
         let y: i32 = (world_pos.y / SPRITE_W).floor() as i32 + H as i32 / 2;
@@ -147,7 +153,7 @@ fn update(state: &mut State, c: &mut EngineContext) {
         TextAlign::Center,
     );
     
-    let label = format!("elapsed: {:.1}, countdown: {:.1}", t, state.board.countdown);
+    let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
     let label = label.as_str();
     draw_text(
         label,
