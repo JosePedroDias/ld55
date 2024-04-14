@@ -12,14 +12,14 @@ const DROP_SHADOW_OFFSET: f32 = 1.0;
 
 struct State {
     pub board: Board,
-    //pub music_playing: bool,
+    pub time_spent: f32,
 }
 
 impl State {
     pub fn new(_c: &EngineState) -> Self {
         Self {
             board: Board::new((W, H)),
-            //music_playing: false,
+            time_spent: 0.0,
         }
     }
 }
@@ -58,17 +58,32 @@ fn setup(_state: &mut State, c: &mut EngineContext) {
     c.load_texture_from_bytes("8", include_bytes!("../assets/sprites/8.png"));
 
     // sfx
-    // load_sound_from_bytes(
-    //     "music",
-    //     include_bytes!("../assets/sfx/comfy-music.ogg"),
-    //     StaticSoundSettings::new().loop_region(..),
-    // );
-    // load_sound_from_bytes(
-    //     "sound",
-    //     include_bytes!("../assets/sfx/bell-sfx.ogg"),
-    //     StaticSoundSettings::default(),
-    // );
-
+    load_sound_from_bytes(
+        "fill",
+        include_bytes!("../assets/sfx/fill.wav"),
+        StaticSoundSettings::default(),
+    );
+    load_sound_from_bytes(
+        "merge",
+        include_bytes!("../assets/sfx/merge.wav"),
+        StaticSoundSettings::default(),
+    );
+    load_sound_from_bytes(
+        "mistake",
+        include_bytes!("../assets/sfx/mistake.wav"),
+        StaticSoundSettings::default(),
+    );
+    load_sound_from_bytes(
+        "penalty",
+        include_bytes!("../assets/sfx/penalty.wav"),
+        StaticSoundSettings::default(),
+    );
+    load_sound_from_bytes(
+        "incoming_tick",
+        include_bytes!("../assets/sfx/incoming_tick.wav"),
+        StaticSoundSettings::default(),
+    );
+    
     let mut cam = main_camera_mut();
     cam.zoom = 280.0 * 0.5;
 }
@@ -145,23 +160,37 @@ fn update(state: &mut State, c: &mut EngineContext) {
     
     // UI overlay
     let color = Color::new(0.5, 0.0, 0.5, 0.75);
-    let t = get_time();
     
-    let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
-    let label = label.as_str();
-    draw_text(
-        label,
-        Vec2::new(0.0, 62.0),
-        color,
-        TextAlign::Center,
-    );
+    if state.board.game_ended {
+        let label = format!("FINISHED IN {:.2} s:", state.time_spent);
+        let label = label.as_str();
+        draw_text(
+            label,
+            Vec2::new(0.0, 0.0),
+            color,
+            TextAlign::Center,
+        );
+    } else {
+        let t = get_time();
+        state.time_spent = t as f32;
     
-    let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
-    let label = label.as_str();
-    draw_text(
-        label,
-        Vec2::new(0.0, 50.0),
-        color,
-        TextAlign::Center,
-    ); 
+        let label = format!("matches: {}, mistakes: {}", state.board.matches, state.board.mistakes);
+        let label = label.as_str();
+        draw_text(
+            label,
+            Vec2::new(0.0, 62.0),
+            color,
+            TextAlign::Center,
+        );
+        
+        let label = format!("t: {:.1}, pen: {:.1}, fill: {:.1}", t, state.board.penalty_countdown, state.board.fill_countdown);
+        let label = label.as_str();
+        draw_text(
+            label,
+            Vec2::new(0.0, 50.0),
+            color,
+            TextAlign::Center,
+        ); 
+    }
+    
 }

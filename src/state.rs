@@ -1,4 +1,4 @@
-//use rand::Rng;
+use comfy::play_sound;
 use rand::prelude::*;
 use std::collections::HashMap;
 use std::fmt;
@@ -85,12 +85,14 @@ impl Board {
                     self.get_cell_mut(&prev_pos).unwrap().number = 0;
                     self.get_cell_mut(pos).unwrap().number += 1;
                     self.matches += 1;
-                    println!("MATCHED {}s MATCHES: {}", first_cells_number, self.matches);
+                    //println!("MATCHED {}s MATCHES: {}", first_cells_number, self.matches);
+                    play_sound("merge");
                     self.selection = None;
                     return true;
                 } else {
                     self.mistakes += 1;
                     self.penalty_countdown -= 10.0;
+                    play_sound("mistake");
                     //println!("MISTAKES: {}", self.mistakes);
                     self.selection = None;
                     return false;
@@ -108,17 +110,27 @@ impl Board {
     }
     
     pub fn handle_countdowns(self: &mut Self, delta: f64) {
+        let p_sec_ = self.penalty_countdown.round();
+        
         self.penalty_countdown -= delta;
         self.fill_countdown -= delta;
         
         if self.penalty_countdown <= 0.0 {
             self.penalty_countdown = PENALTY_COUNTDOWN;
             self.clean_cells(0.25);
+            play_sound("penalty");
+        }
+        
+        let p_sec = self.penalty_countdown.round();
+        if p_sec != p_sec_ && self.penalty_countdown > 0.5 && self.penalty_countdown < 5.5 {
+            play_sound("incoming_tick");
         }
         
         if self.fill_countdown <= 0.0 {
             self.fill_countdown = FILL_COUNTDOWN;
-            self.fill_empty_cell();
+            if self.fill_empty_cell() {
+                play_sound("fill");
+            }
         }
     }
     
@@ -142,21 +154,22 @@ impl Board {
         for pos in filled_positions {
             let r = self.rng.gen_range(0.0..1.0);
             if r < ratio {
-                println!("CLEARING {:?}", pos);
+                //println!("CLEARING {:?}", pos);
                 self.get_cell_mut(&pos).unwrap().number = 0;
             }
         }
     }
     
-    pub fn fill_empty_cell(self: &mut Self) {
+    pub fn fill_empty_cell(self: &mut Self) -> bool {
         let empty_positions = self.get_matching_positions(|c| c.number == 0);
         if empty_positions.len() == 0 {
-            return;
+            return false;
         }
         let i = self.rng.gen_range(0..empty_positions.len());
         let pos = empty_positions[i];
-        println!("FILLING {:?} WITH 1", pos);
+        //println!("FILLING {:?} WITH 1", pos);
         self.get_cell_mut(&pos).unwrap().number = 1;
+        true
     }
     
     pub fn has_won(self: &Self) -> bool {

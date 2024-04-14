@@ -5,7 +5,7 @@
 - [x] 2D matrix of M * N sprites
 - [x] there's a progression of sprites, let's say they're powers of 2, 2 > 4 > ... > 2048
 - [ ] the theme is a bit dark
-- [ ] we need audio sfx for
+- [x] we need audio sfx for
     - applying penalty
     - mistake
     - fill
