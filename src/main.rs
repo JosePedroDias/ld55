@@ -175,19 +175,15 @@ You've beat the game in {:.2} secs.", state.elapsed_time);
                 TextAlign::Center,
             );
         } else {
-            let label = format!("Merge until you get a {}
-Be careful with The Bar!
-Click to start", state.level_params.goal_number);
-            let label = label.as_str();
             draw_text(
-                label,
+                "Click to start",
                 Vec2::new(0.0, 0.0),
                 UI_COLOR,
                 TextAlign::Center,
             );
         }
     } else {
-        let label = format!("elapsed: {:.0}", state.elapsed_time);
+        let label = format!("level {}, goal: {}, elapsed: {:.0} s", state.current_level, state.level_params.goal_number, state.elapsed_time);
         let label = label.as_str();
         draw_text(
             label,
