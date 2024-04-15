@@ -1,0 +1,18 @@
+# see https://raw.githubusercontent.com/trunk-rs/trunk/main/Trunk.toml
+
+[build]
+
+# Build in release mode.
+release = true
+
+# The output dir for all final assets.
+dist = "dist"
+
+# The public URL from which assets are to be served.
+public_url = "./"
+
+# Allow disabling minification
+no_minification = true
+
+# Allow disabling sub-resource integrity (SRI)
+no_sri = true
